@@ -1,0 +1,47 @@
+version: "3.8"
+services:
+  nodejs:
+    build: 
+      context: .
+    image: thebro/referidos-nodejs
+    networks:
+      - frontend
+      - backend
+    environment:
+      - MYSQL_HOST=referidos-mysql-app
+      - MYSQL_USER=emilio
+      - MYSQL_PASS=emilio
+      - MYSQL_DB=referidos
+    volumes:
+      - ./www/:/var/www/html/
+    ports:
+      - "30001:8005"
+    container_name: referidos-nodejs-app
+  mysql:
+    image: mysql:latest
+    networks:
+      - backend
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=emilio
+      - MYSQL_PASSWORD=emilio 
+      - MYSQL_DATABASE=referidos
+    container_name: referidos-mysql-app
+  phpmyadmin:
+    # image: phpmyadmin/phpmyadmin:4.7
+    image: phpmyadmin/phpmyadmin:latest
+    depends_on:
+      - mysql
+    networks:
+      - backend
+    ports:
+      - "30002:80"
+    environment:
+      - PMA_HOST=referidos-mysql-app
+      - PMA_PORT= 3306
+    volumes:
+      - /sessions
+    container_name: referidos-phpmyadmin-app
+networks:
+  frontend:
+  backend:
